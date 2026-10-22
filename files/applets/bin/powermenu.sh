@@ -87,12 +87,28 @@ confirm_run () {
     fi	
 }
 
+# Confirm and run the current desktop session's logout command
+confirm_logout() {
+	selected="$(confirm_exit)"
+	if [[ "$selected" == "$yes" ]]; then
+		if [[ "$DESKTOP_SESSION" == 'openbox' ]]; then
+			openbox --exit
+		elif [[ "$DESKTOP_SESSION" == 'bspwm' ]]; then
+			bspc quit
+		elif [[ "$DESKTOP_SESSION" == 'i3' ]]; then
+			i3-msg exit
+		elif [[ "$DESKTOP_SESSION" == 'plasma' ]]; then
+			qdbus org.kde.ksmserver /KSMServer logout 0 0 0
+		fi
+	fi
+}
+
 # Execute Command
 run_cmd() {
 	if [[ "$1" == '--opt1' ]]; then
 		betterlockscreen -l
 	elif [[ "$1" == '--opt2' ]]; then
-		confirm_run 'kill -9 -1'
+		confirm_logout
 	elif [[ "$1" == '--opt3' ]]; then
 		confirm_run 'mpc -q pause' 'amixer set Master mute' 'systemctl suspend'
 	elif [[ "$1" == '--opt4' ]]; then
